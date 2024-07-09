@@ -1,0 +1,6 @@
+@TrueCode.Todos_HostAddress = http://localhost:5146
+
+GET {{TrueCode.Todos_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

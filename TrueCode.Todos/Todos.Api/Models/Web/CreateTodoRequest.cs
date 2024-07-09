@@ -10,5 +10,7 @@ public class CreateTodoRequest
 
     public DateTime? DueDate { get; set; }
 
+    public bool? IsCompleted { get; set; }
+
     public PriorityLevel Priority { get; set; }
 }

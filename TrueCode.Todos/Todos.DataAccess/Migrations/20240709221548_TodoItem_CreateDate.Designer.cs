@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Todos.DataAccess;
@@ -11,9 +12,11 @@ using Todos.DataAccess;
 namespace Todos.DataAccess.Migrations
 {
     [DbContext(typeof(TodosContext))]
-    partial class TodosContextModelSnapshot : ModelSnapshot
+    [Migration("20240709221548_TodoItem_CreateDate")]
+    partial class TodoItem_CreateDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

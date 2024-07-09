@@ -12,6 +12,8 @@ public class TodoItem
 
     public DateTime? DueDate { get; set; }
 
+    public DateTime CreateDate { get; set; }
+
     public int UserId { get; set; }
 
     public User User { get; set; }

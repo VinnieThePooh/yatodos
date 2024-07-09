@@ -15,4 +15,6 @@ public class TodoListItem
     public bool Completed { get; set; }
     
     public DateTime? DueDate { get; set; }
+
+    public DateTime CreateDate { get; set; }
 }

@@ -1,5 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using TrueCode.Todos.Extensions;
 using TrueCode.Todos.Models;
+using TrueCode.Todos.Services;
 
 namespace TrueCode.Todos.Controllers;
 
@@ -8,28 +11,40 @@ namespace TrueCode.Todos.Controllers;
 [Route("[controller]")]
 public class TodosController : Controller
 {
-    // GET
-    public IActionResult Index(int pageSize, int pageNumber)
+    private readonly ITodoService todoService;
+    private int CurrentUserId => User.GetUserId<int>();
+    
+    public TodosController(ITodoService todoService)
     {
-        return View();
+        this.todoService = todoService;
+    }
+    
+    // GET
+    public async Task<PaginationModel<TodoListItem>> Index(int? pageSize, int? pageNumber)
+    {
+        var model = await todoService.GetTodos(pageSize, pageNumber, CurrentUserId);
+        return model;
     }
     
     [HttpPost]
-    public IActionResult Index(CreateTodoRequest request)
+    public async Task<ActionResult<int>> Index(CreateTodoRequest request)
     {
-        return NoContent();
+        var result = await todoService.CreateTodo(request, CurrentUserId);
+        return Ok(result);
     }
     
     
     [HttpPut]
-    public IActionResult Index(UpdateTodoRequest request)
+    public async Task<IActionResult> Index(UpdateTodoRequest request)
     {
+        await todoService.UpdateTodo(request);
         return NoContent();
     }
 
     [HttpDelete("{todoId:int}")]
-    public IActionResult Index(int todoId)
+    public async Task<IActionResult> Index(int todoId)
     {
+        await todoService.DeleteTodo(todoId);
         return NoContent();
     }
 }

@@ -69,8 +69,6 @@ public class TodoService : ITodoService
             );
     }
 
-    public PriorityLevel Priority { get; set; }
-
     public async Task DeleteTodo(int todoId)
     {
         await _context.Set<TodoItem>().Where(x => x.Id == todoId).ExecuteDeleteAsync();

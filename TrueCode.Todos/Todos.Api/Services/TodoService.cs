@@ -23,7 +23,7 @@ public class TodoService : ITodoService
 
         await using var context = await _contextFactory.CreateDbContextAsync();
 
-        var data = await context.Set<TodoItem>()
+        var data = await context.Set<TodoItem>().Include(x => x.Priority)
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.CreateDate).Skip((pn - 1) * ps).Take(ps)
             .Select(x => x.ToListItem()).ToArrayAsync();

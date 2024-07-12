@@ -1,9 +1,7 @@
 namespace TrueCode.Todos.Auth;
 
-internal class JwtSettings
+internal class JwtSettings : ISettings
 {
-    public const string SettingsKey = "Jwt";
-    
     public string PrivateKey { get; set; }
 
     public string Audience { get; set; }
@@ -13,4 +11,6 @@ internal class JwtSettings
     public TimeSpan AccessTokenExpiration { get; set; } = TimeSpan.FromMinutes(60);
 
     public TimeSpan RefreshTokenExpiration { get; set; } = TimeSpan.FromMinutes(120);
+
+    public static string SectionKey => "Jwt";
 }

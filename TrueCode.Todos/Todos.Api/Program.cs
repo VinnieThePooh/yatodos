@@ -7,13 +7,14 @@ using Todos.DataAccess.Identity;
 using Todos.Models.Domain;
 using TrueCode.Todos;
 using TrueCode.Todos.Auth;
+using TrueCode.Todos.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 var conString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings.SettingsKey)));
+ConfigurationExt.ConfigureSingletonSettings<JwtSettings>(builder);
 
-var jwtSettings = builder.Configuration.GetSection(JwtSettings.SettingsKey).Get<JwtSettings>();
+var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>();
 
 builder.Services
     .AddAuthentication(x =>

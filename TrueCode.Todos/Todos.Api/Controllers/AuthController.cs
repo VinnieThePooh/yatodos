@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
     private string CreateToken(List<Claim> userClaims)
     {
         var tokenHandler = new JsonWebTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_jwtSettings.PrivateKey);
+        var key = Encoding.ASCII.GetBytes(_jwtSettings.PrivateKey);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(userClaims),

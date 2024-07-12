@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace TrueCode.Todos.Controllers;
 
 // [Authorize("User")]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class TodosController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
@@ -25,7 +26,7 @@ public class TodosController : Controller
     }
     
     [HttpGet("getuser")]
-    [Authorize(Roles = RoleNames.USER)]
+    [Authorize(Roles = RoleNames.USER, AuthenticationSchemes = BearerTokenDefaults.AuthenticationScheme)]
     public async Task<ActionResult<User>> GetUser()
     {
         // Retrieve userId from the claims

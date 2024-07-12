@@ -91,7 +91,11 @@ builder.Services.AddIdentity<AppUser, AppRole>()
 var app = builder.Build();
 
 await using (var scope = app.Services.CreateAsyncScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<TodosContext>();
+    await context.Database.MigrateAsync();
     await SampleData.SeedUsersAndRoles(scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,0 +1,9 @@
+.todo-list-view {
+    background-color: white;
+    width: 300px;
+}
+
+.list-item-container {
+    background-color: white;
+    max-width: 300px;
+}

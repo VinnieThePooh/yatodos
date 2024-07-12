@@ -3,6 +3,7 @@ export class TodoListItem {
     title!:string;
     description!:string;
     priority!:number;
+    priorityName!:string;
     isCompleted!:boolean;
     dueDate?:Date;
     createDate?:Date;

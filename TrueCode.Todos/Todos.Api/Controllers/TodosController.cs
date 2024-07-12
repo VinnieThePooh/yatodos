@@ -51,7 +51,7 @@ public class TodosController : Controller
         }
     }
     
-    // GET
+    [HttpGet]
     public async Task<PaginationModel<TodoListItem>> Index(int? pageSize, int? pageNumber)
     {
         var model = await _todoService.GetTodos(pageSize, pageNumber, CurrentUserId);

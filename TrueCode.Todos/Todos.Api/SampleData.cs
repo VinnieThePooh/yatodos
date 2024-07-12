@@ -12,13 +12,10 @@ public static class SampleData
     public static async Task SeedUsersAndRoles(IServiceProvider serviceProvider)
     {
         var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
-        var context = serviceProvider.GetRequiredService<TodosContext>();
-        var roleStore = new RoleStore<AppRole, TodosContext, int>(context);
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<AppRole>>();
         
         string[] rolesNames = ["Administrator", "User"];
-        
-        var allRoles = await context.Roles.ToArrayAsync();
-        await InitRoles(rolesNames, roleStore, userManager, allRoles);
+        var rolesToAdd = await InitRoles(rolesNames, roleManager);
         
         //init users
         var users = new [] {
@@ -26,24 +23,27 @@ public static class SampleData
             ("ValeraAdmin", "valeraadmin@ryansoftware.com", "secret"),
             ("NarutoUzumaki", "uzumaki@ryansoftware.com", "narutoSecret")
         };
-        await InitUsers(users, allRoles, userManager);
+        await InitUsers(users, rolesToAdd, userManager);
     }
 
-    private static async Task InitRoles(string[] roleNames, IRoleStore<AppRole> roleStore, UserManager<AppUser> userManager, AppRole[] allRoles)
+    private static async Task<AppRole[]> InitRoles(string[] roleNames, RoleManager<AppRole> roleManager)
     {
+        var keysNormalizer = roleManager.KeyNormalizer;
         foreach (string roleName in roleNames)
         {
-            if (!allRoles.Any(r => r.Name == roleName))
+            if (!await roleManager.RoleExistsAsync(roleName))
             {
-                var role = new AppRole { Name = roleName, NormalizedName = userManager.KeyNormalizer.NormalizeName(roleName) };
-                await roleStore.CreateAsync(role, CancellationToken.None);
+                var role = new AppRole { Name = roleName, NormalizedName = keysNormalizer.NormalizeName(roleName) };
+                await roleManager.CreateAsync(role);
             }
         }
+        
+        return await roleManager.Roles.Where(x => roleNames.Contains(x.Name)).ToArrayAsync();
     }
 
     private static async Task InitUsers(
         (string name, string email, string password)[] users, 
-        AppRole[] allRoles,
+        AppRole[] rolesToAdd,
         UserManager<AppUser> userManager)
     {
         foreach (var (name, email, password) in users)
@@ -67,13 +67,12 @@ public static class SampleData
                 user.User = new User { UserName = user.UserName };
                 _ = await userManager.CreateAsync(user);
             }
-            await AssignRoles(userManager, user, allRoles);
+            await AssignRoles(userManager, user, rolesToAdd);
         }
     }
 
     private static async Task AssignRoles(UserManager<AppUser> userManager, AppUser user, IEnumerable<AppRole> roles)
     {
-        foreach (var role in roles)
-            await userManager.AddToRoleAsync(user, role.NormalizedName);
+        await userManager.AddToRolesAsync(user, roles.Select(x => x.Name));
     }
 }

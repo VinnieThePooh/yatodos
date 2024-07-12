@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { IUserProfile } from '../../models/user-profile';
+import { IUserCredentials, IUserProfile } from '../../models/user-models';
 import { FormsModule } from '@angular/forms';
+import { UserProfileService } from '../../services/user-profile.service';
 
 @Component({
   selector: 'app-login',
@@ -15,9 +16,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class LoginComponent {
 
-  userProfile:IUserProfile = {email: '', password: ''};
+  userCredentials:IUserCredentials = {email: '', password: ''};
 
-  constructor(    
+  constructor(
+    private profileService: UserProfileService,    
     private authService: AuthService,
     private router: Router    
   ) {        
@@ -27,11 +29,11 @@ export class LoginComponent {
 
     console.log("Login called")
 
-    if (!this.userProfile.email || !this.userProfile.password)
+    if (!this.userCredentials.email || !this.userCredentials.password)
       return;
     
       this.authService
-        .login(this.userProfile.email, this.userProfile.password)
+        .login(this.userCredentials.email, this.userCredentials.password)
         .subscribe((r) => {
           if (r) {
             console.log('User is logged in');

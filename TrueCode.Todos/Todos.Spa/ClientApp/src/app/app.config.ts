@@ -15,3 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
   ]
 };
+
+export const ApiUrls = {
+  Base: "http://localhost:5146"
+}

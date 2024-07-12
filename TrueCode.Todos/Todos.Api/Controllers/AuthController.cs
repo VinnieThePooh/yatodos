@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Todos.DataAccess.Identity;
 using TrueCode.Todos.Auth;
+using TrueCode.Todos.Models;
 
 namespace TrueCode.Todos.Controllers;
 
@@ -45,13 +46,14 @@ public class AuthController : ControllerBase
 
         var authClaims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Name, user.UserName!),
         };
 
         foreach (var userRole in userRoles)
             authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-        
-        return Ok(new { Token = CreateToken(authClaims) });
+
+        var token = CreateToken(authClaims);
+        return Ok(new AuthResponse(token, new UserProfile(user.Id, user.UserName!, user.Email)));
     }
     
     private string CreateToken(List<Claim> userClaims)

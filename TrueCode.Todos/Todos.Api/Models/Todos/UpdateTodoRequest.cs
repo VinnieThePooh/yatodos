@@ -4,7 +4,7 @@ namespace TrueCode.Todos.Models;
 
 public class UpdateTodoRequest
 {
-    public int TodoId { get; set; }
+    public int Id { get; set; }
     public string Title { get; set; }
 
     public string Description { get; set; }

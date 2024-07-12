@@ -65,7 +65,7 @@ public class TodoService : ITodoService
         
         //todo: get from memory
         var priorityId = await FindPriorityId(request.Priority);
-        await context.Set<TodoItem>().Where(x => x.Id == request.TodoId)
+        await context.Set<TodoItem>().Where(x => x.Id == request.Id)
             .ExecuteUpdateAsync((setters) => setters
                 .SetProperty(x => x.Title, request.Title)
                 .SetProperty(x => x.Completed, request.IsCompleted)

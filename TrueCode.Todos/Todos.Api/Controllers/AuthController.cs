@@ -53,8 +53,7 @@ public class AuthController : ControllerBase
         
         return Ok(new { Token = CreateToken(authClaims) });
     }
-
-    //todo: create settings class 
+    
     private string CreateToken(List<Claim> userClaims)
     {
         var tokenHandler = new JsonWebTokenHandler();
@@ -62,7 +61,6 @@ public class AuthController : ControllerBase
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(userClaims),
-            //todo: move to config
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             Issuer = _jwtSettings.Issuer, // Add this line

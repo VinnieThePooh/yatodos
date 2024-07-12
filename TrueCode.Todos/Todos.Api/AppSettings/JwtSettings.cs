@@ -1,6 +1,6 @@
 namespace TrueCode.Todos.Auth;
 
-internal class JwtSettings : ISettings
+public class JwtSettings : ISettings
 {
     public string PrivateKey { get; set; }
 

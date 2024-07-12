@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Todos.DataAccess.Identity;
+using TrueCode.Todos.Auth;
 
 namespace TrueCode.Todos.Controllers;
 
@@ -16,16 +17,16 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
     public AuthController(
         UserManager<AppUser> userManager, 
         SignInManager<AppUser> signInManager, 
-        IConfiguration configuration)
+        JwtSettings jwtSettings)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-        _configuration = configuration;
+        _jwtSettings = jwtSettings;
     }
 
     [AllowAnonymous]
@@ -57,15 +58,15 @@ public class AuthController : ControllerBase
     private string CreateToken(List<Claim> userClaims)
     {
         var tokenHandler = new JsonWebTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+        var key = Encoding.UTF8.GetBytes(_jwtSettings.PrivateKey);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(userClaims),
             //todo: move to config
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-            Issuer = _configuration["Jwt:Issuer"], // Add this line
-            Audience = _configuration["Jwt:Audience"]
+            Issuer = _jwtSettings.Issuer, // Add this line
+            Audience = _jwtSettings.Audience
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);

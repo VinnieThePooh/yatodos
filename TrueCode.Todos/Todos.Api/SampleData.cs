@@ -10,49 +10,54 @@ public static class SampleData
 {
     public static async Task SeedUsersAndRoles(IServiceProvider serviceProvider)
     {
+        var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
+        
         string[] rolesNames = ["Administrator", "User"];
         List<AppRole> roles = new();
         var context = serviceProvider.GetRequiredService<TodosContext>();
         var roleStore = new RoleStore<AppRole, TodosContext, int>(context);
 
-        foreach (string name in rolesNames)
+        //init roles
+        foreach (string roleName in rolesNames)
         {
-            if (!context.Roles.Any(r => r.Name == name))
+            if (!context.Roles.Any(r => r.Name == roleName))
             {
-                var role = new AppRole() { Name = name, NormalizedName = name.ToLower() };
+                var role = new AppRole { Name = roleName, NormalizedName = userManager.KeyNormalizer.NormalizeName(roleName) };
                 roles.Add(role);
                 await roleStore.CreateAsync(role);
             }
         }
-
+        
+        //init users
+        var name = "ValeraAdmin";
+        var email = "valeraadmin@ryansoftware.com";
+        var password = "secret";
+        
         var user = new AppUser
         {
-            Email = "valeraadmin@ryansoftware.com",
-            NormalizedEmail = "valeraadmin@ryansoftware.com",
-            UserName = "ValeraAdmin",
-            NormalizedUserName = "valeraadmin",
+            Email = email,
+            NormalizedEmail =  userManager.KeyNormalizer.NormalizeEmail(email),
+            UserName = name,
+            NormalizedUserName = userManager.KeyNormalizer.NormalizeName(name),
             PhoneNumber = "+111111111111",
             EmailConfirmed = true,
             PhoneNumberConfirmed = true,
             SecurityStamp = Guid.NewGuid().ToString("D"),
         };
-
-        var userStore = new UserStore<AppUser, AppRole, TodosContext, int>(context);
+        
         if (!context.Users.Any(u => u.UserName == user.UserName))
         {
-            var password = new PasswordHasher<AppUser>();
-            var hashed = password.HashPassword(user, "secret");
-            user.PasswordHash = hashed;
+            user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
             //our domain part
-            user.User = new User() { UserName = user.UserName };
-            _ = await userStore.CreateAsync(user);
+            user.User = new User { UserName = user.UserName };
+            _ = await userManager.CreateAsync(user);
         }
-        await AssignRoles(userStore, user, roles);
+        await AssignRoles(userManager, user, roles);
     }
 
-    private static async Task AssignRoles(UserStore<AppUser, AppRole, TodosContext, int> userStore, AppUser user, IEnumerable<AppRole> roles)
+    private static async Task AssignRoles(UserManager<AppUser> userManager, AppUser user, IEnumerable<AppRole> roles)
     {
         foreach (var role in roles)
-            await userStore.AddToRoleAsync(user, role.NormalizedName);
+            await userManager.AddToRoleAsync(user, role.NormalizedName);
     }
 }

@@ -35,6 +35,19 @@ builder.Services
         //     ValidateAudience = false
         // };
     });
+
+var  localAngularApp = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: localAngularApp,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationBuilder();
 builder.Services.AddControllers();
@@ -88,6 +101,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(localAngularApp);
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

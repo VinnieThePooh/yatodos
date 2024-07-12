@@ -31,10 +31,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest userLogin)
-    {         
-        if (!ModelState.IsValid)
-            return BadRequest("Login or password is incorrect");
-        
+    { 
         var user = await _userManager.FindByEmailAsync(userLogin.Email);
         if (user is null)
             return BadRequest("Login or password is incorrect");

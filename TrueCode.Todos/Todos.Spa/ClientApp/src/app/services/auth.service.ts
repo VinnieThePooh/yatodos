@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IAuthResponse } from '../models/auth-response';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
-import { ApiUrls } from '../app.config';
+import { ApiUrls, BaseUrl } from '../app.config';
 import { UserProfileService } from './user-profile.service';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class AuthService {
     private http: HttpClient) {}
 
   login(email: string, password: string): Observable<boolean> {
-     return this.http.post<IAuthResponse>(ApiUrls.Base + '/api/auth/login', {email, password}).pipe(
+     return this.http.post<IAuthResponse>(BaseUrl + '/api/auth/login', {email, password}).pipe(
       map((response) => {
         localStorage.setItem('JWT_Token', response.token);
         this.profileService.setUserProfile(response.profile)        

@@ -19,6 +19,10 @@ export const appConfig: ApplicationConfig = {
   ]
 };
 
-export const ApiUrls = {
-  Base: "http://localhost:5146"
+export const BaseUrl = "http://localhost:5146";
+
+//todo: refactor
+export const ApiUrls = {  
+  Todos: BaseUrl + "/api/todos"
 }
+

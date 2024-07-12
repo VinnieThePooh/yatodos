@@ -20,6 +20,10 @@ export class UserProfileService {
     this._userProfile = null;;
   }
 
+  public get UserProfile(): Nullable<IUserProfile>
+  {
+     return this._userProfile;
+  }
 }
 
-type Nullable<T> = T | null;
+export type Nullable<T> = T | null;

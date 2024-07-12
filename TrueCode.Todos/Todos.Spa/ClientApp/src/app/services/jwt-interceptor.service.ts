@@ -1,12 +1,11 @@
 import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
+  HttpHandlerFn,
+  HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
 
-export class JwtInterceptor implements HttpInterceptor {
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
+export const JwtInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next:
+  HttpHandlerFn) => {
     const token = localStorage.getItem('JWT_Token');
     if (token) {
       const authReq = req.clone({
@@ -14,9 +13,8 @@ export class JwtInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`,
         },
       });
-      return next.handle(authReq);
+      return next(authReq);
     }
 
-    return next.handle(req);
-  }
-}
+    return next(req);
+  };

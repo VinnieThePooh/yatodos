@@ -8,13 +8,12 @@ namespace TrueCode.Todos.Services;
 
 public class TodoService : ITodoService
 {
+    private readonly IDbContextFactory<TodosContext> _contextFactory;
     private const int DEFAULT_PAGE_SIZE = 10;
-    
-    private readonly TodosContext _context;
 
-    public TodoService(TodosContext context)
+    public TodoService(IDbContextFactory<TodosContext> contextFactory)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
     }
 
     public async Task<PaginationModel<TodoListItem>> GetTodos(int? pageNumber, int? pageSize, int userId)
@@ -22,12 +21,14 @@ public class TodoService : ITodoService
         var ps = pageSize ?? DEFAULT_PAGE_SIZE;
         var pn = pageNumber ?? 1;
 
-        var data = await _context.Set<TodoItem>()
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var data = await context.Set<TodoItem>()
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.CreateDate).Skip((pn - 1) * ps).Take(ps)
             .Select(x => x.ToListItem()).ToArrayAsync();
 
-        var totalCount = await _context.Set<TodoItem>().CountAsync();
+        var totalCount = await context.Set<TodoItem>().CountAsync();
         return new PaginationModel<TodoListItem>
         {
             PageCount =  GetPageCount(totalCount, ps),
@@ -50,16 +51,21 @@ public class TodoService : ITodoService
             PriorityId =  await FindPriorityId(request.Priority),
             Completed = request.IsCompleted ?? false
         };
-        _context.Set<TodoItem>().Add(item);
-        await _context.SaveChangesAsync();
+        
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        context.Set<TodoItem>().Add(item);
+        await context.SaveChangesAsync();
         return item.Id;
     }
 
     public async Task UpdateTodo(UpdateTodoRequest request)
     {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
         //todo: get from memory
         var priorityId = await FindPriorityId(request.Priority);
-        await _context.Set<TodoItem>().Where(x => x.Id == request.TodoId)
+        await context.Set<TodoItem>().Where(x => x.Id == request.TodoId)
             .ExecuteUpdateAsync((setters) => setters
                 .SetProperty(x => x.Title, request.Title)
                 .SetProperty(x => x.Completed, request.IsCompleted)
@@ -71,7 +77,8 @@ public class TodoService : ITodoService
 
     public async Task DeleteTodo(int todoId)
     {
-        await _context.Set<TodoItem>().Where(x => x.Id == todoId).ExecuteDeleteAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        await context.Set<TodoItem>().Where(x => x.Id == todoId).ExecuteDeleteAsync();
     }
 
     private static int GetPageCount(int totalCount, int pageSize)
@@ -86,7 +93,8 @@ public class TodoService : ITodoService
     //todo: should be cached
     async Task<int> FindPriorityId(PriorityLevel priorityValue)
     {
-        var priority = await _context.Set<TodoPriority>().FirstAsync(x => x.Value == priorityValue);
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var priority = await context.Set<TodoPriority>().FirstAsync(x => x.Value == priorityValue);
         return priority.Id;
     }
 }

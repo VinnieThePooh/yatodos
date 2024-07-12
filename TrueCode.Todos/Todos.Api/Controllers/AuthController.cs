@@ -43,10 +43,11 @@ public class AuthController : ControllerBase
             return BadRequest("Login or password is incorrect");
         
         var userRoles = await _userManager.GetRolesAsync(user);
-
+        
         var authClaims = new List<Claim>
         {
             new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
         foreach (var userRole in userRoles)

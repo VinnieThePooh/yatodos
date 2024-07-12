@@ -1,6 +1,9 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Todos.DataAccess;
 using Todos.DataAccess.Identity;
@@ -8,6 +11,7 @@ using Todos.Models.Domain;
 using TrueCode.Todos;
 using TrueCode.Todos.Auth;
 using TrueCode.Todos.Controllers;
+using TrueCode.Todos.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var conString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -16,24 +20,33 @@ ConfigurationExt.ConfigureSingletonSettings<JwtSettings>(builder);
 
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>();
 
+builder.Services.AddSingleton<ITodoService, TodoService>();
+builder.Services.AddDbContextFactory<TodosContext>(options => options.UseNpgsql(conString));
+
+builder.Services.AddIdentity<AppUser, AppRole>()
+    .AddUserStore<UserStore<AppUser, AppRole, TodosContext, int>>()
+    .AddRoleStore<RoleStore<AppRole, TodosContext, int>>();
+
 builder.Services
     .AddAuthentication(x =>
     {
-        x.DefaultAuthenticateScheme = BearerTokenDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = BearerTokenDefaults.AuthenticationScheme;
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddBearerToken(x =>
+    .AddJwtBearer(options =>
     {
-        x.BearerTokenExpiration = jwtSettings.AccessTokenExpiration;
-        x.RefreshTokenExpiration = jwtSettings.RefreshTokenExpiration;
-        // x.BearerTokenProtector = 
-        // x.RefreshTokenProtector
-        // x.TokenValidationParameters = new TokenValidationParameters
-        // {
-        //     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtSettings.PrivateKey)),
-        //     ValidateIssuer = false,
-        //     ValidateAudience = false
-        // };
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            //todo: to config
+            ValidAudience = "http://localhost:4200",
+            ValidIssuer = "http://localhost:5146",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.PrivateKey))
+        };
     });
 
 var  localAngularApp = "_myAllowSpecificOrigins";
@@ -83,13 +96,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-builder.Services.AddDbContext<TodosContext>(options => options.UseNpgsql(conString));
-builder.Services.AddIdentity<AppUser, AppRole>()
-    .AddUserStore<UserStore<AppUser, AppRole, TodosContext, int>>()
-    .AddRoleStore<RoleStore<AppRole, TodosContext, int>>();
 
 var app = builder.Build();
-
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TodosContext>();
@@ -106,6 +114,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(localAngularApp);
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

@@ -18,19 +18,21 @@ public class TodosController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly ITodoService _todoService;
+    private readonly ILogger<TodosController> _logger;
     private int CurrentUserId => User.GetUserId<int>();
     
-    public TodosController(ITodoService todoService)
+    public TodosController(ITodoService todoService, UserManager<AppUser> userManager, ILogger<TodosController> logger)
     {
-        _todoService = todoService;
+        _todoService = todoService ?? throw new ArgumentNullException(nameof(todoService));
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
     [HttpGet("getuser")]
-    [Authorize(Roles = RoleNames.USER, AuthenticationSchemes = BearerTokenDefaults.AuthenticationScheme)]
+    [Authorize(Roles = RoleNames.USER)]
     public async Task<ActionResult<User>> GetUser()
     {
-        // Retrieve userId from the claims
-        var userIdClaim = _userManager.GetUserId(User);
+        var id = User.GetUserId<int>();
         
         Console.WriteLine("Claims received:");
         foreach (var claim in User.Claims)
@@ -38,12 +40,12 @@ public class TodosController : Controller
             Console.WriteLine($"{claim.Type}: {claim.Value}");
         }
         
-        if(userIdClaim is null)
+        if(id == default)
             return Unauthorized("No user ID claim present in token.");
         
         try
         {
-            var user = await _userManager.FindByIdAsync(userIdClaim); 
+            var user = await _userManager.FindByIdAsync(id.ToString()); 
             return Ok(user);
         }
         catch (InvalidOperationException ex)

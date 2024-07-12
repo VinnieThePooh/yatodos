@@ -12,6 +12,7 @@ public static class DomainExtensions
             Id = item.Id,
             Priority = item.Priority.Value,
             Completed = item.Completed,
+            PriorityName = item.Priority.Name,
             Title = item.Title,
             DueDate = item.DueDate,
             CreateDate = item.CreateDate,

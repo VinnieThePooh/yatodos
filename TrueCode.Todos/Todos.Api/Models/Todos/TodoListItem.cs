@@ -12,6 +12,8 @@ public class TodoListItem
 
     public PriorityLevel Priority { get; set; }
 
+    public string PriorityName { get; set; }
+
     public bool Completed { get; set; }
     
     public DateTime? DueDate { get; set; }

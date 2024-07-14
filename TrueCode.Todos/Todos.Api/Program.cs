@@ -67,8 +67,7 @@ builder.Services
     .AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
     .AddJsonOptions(x =>
     {
-        x.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
-        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        x.JsonSerializerOptions.Converters.Add(new JsonNumberEnumConverter<PriorityLevel>());
     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

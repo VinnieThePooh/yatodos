@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Todos.DataAccess.Identity;
-using Todos.Models.Domain;
 using TrueCode.Todos.Constants;
 using TrueCode.Todos.Extensions;
 using TrueCode.Todos.Models;

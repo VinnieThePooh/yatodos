@@ -4,7 +4,7 @@ namespace TrueCode.Todos.Models;
 /// Response model
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class PaginationModel<T>
+public struct PaginationModel<T>
 {
     //might be redundant but ok
     public int PageSize { get; set; }

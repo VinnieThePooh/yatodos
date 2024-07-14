@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { IUserProfile } from '../models/user-models';
 import { Nullable, UserProfileService } from './user-profile.service';
 import { Observable } from 'rxjs';
-import { ITodoCreateRequest } from '../models/todos/todo-request-models';
+import { ITodoCreateRequest, ITodoUpdateRequest } from '../models/todos/todo-request-models';
 import { ITodoListItem } from '../models/todos/todo-list-item';
 import { ApiUrls } from '../app.config';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { PaginationModel } from '../models/pagination-model';
 import { ITodoCreateResponse } from '../models/todos/todo-response-models';
 
@@ -42,7 +42,7 @@ export class TodosService {
   }
 
   //todo: return type?
-  updateTodo(listItem: ITodoListItem): Observable<object> {    
+  updateTodo(listItem: ITodoUpdateRequest): Observable<object> {    
     return this.httpClient.put(this.targetUrl, listItem);
   }
 

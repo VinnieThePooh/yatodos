@@ -14,8 +14,9 @@ import {
 import { DialogData } from '../../../models/dialog-data';
 import { TodosService } from '../../../services/todos.service';
 import { MatInputModule } from '@angular/material/input';
-import { ITodoCreateRequest } from '../../../models/todos/todo-request-models';
+import { ITodoCreateRequest, ITodoUpdateRequest } from '../../../models/todos/todo-request-models';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { UserProfileService } from '../../../services/user-profile.service';
 
 @Component({
   selector: 'app-todo-list-item-detail-view',
@@ -35,10 +36,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
   styleUrl: './todo-list-item-detail-view.component.css',
 })
 export class TodoListItemDetailViewComponent {
-
   public todoItem!: ITodoListItem;
 
-  constructor(    
+  constructor(
+    private profileService: UserProfileService,
     private todoService: TodosService,
     public dialogRef: MatDialogRef<TodoListItemDetailViewComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData<ITodoListItem>
@@ -58,20 +59,39 @@ export class TodoListItemDetailViewComponent {
     this.dialogRef.close();
   }
 
-  onSubmitClick() {    
+  onSubmitClick() {
+    if (this.data.newObject) {
+      const request: ITodoCreateRequest = {
+        title: this.todoItem.title,
+        description: this.todoItem.description,
+        priority: this.todoItem.priority,
+        isCompleted: this.todoItem.isCompleted,
+        dueDate: this.todoItem.dueDate,
+      };
 
-    const request:ITodoCreateRequest = {
+      this.todoService.createTodo(request).subscribe((r) => {
+        this.todoItem.id = r.id;
+        this.todoItem.createDate = r.createDate;
+        this.dialogRef.close(this.todoItem);
+      });
+      return;
+    }
+
+    var userId = this.profileService.UserProfile!.userId;
+
+    //update request
+    const request: ITodoUpdateRequest = {
       title: this.todoItem.title,
+      id: this.todoItem.id,
+      userId: userId,
       description: this.todoItem.description,
       priority: this.todoItem.priority,
       isCompleted: this.todoItem.isCompleted,
-      dueDate: this.todoItem.dueDate
+      dueDate: this.todoItem.dueDate,
     };
 
-    this.todoService.createTodo(request).subscribe((r) => {
-      this.todoItem.id = r.id;
-      this.todoItem.createDate = r.createDate;
+    this.todoService.updateTodo(request).subscribe((r) => {            
       this.dialogRef.close(this.todoItem);
     });
-    }  
+  }
 }

@@ -2,7 +2,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { BaseUrl } from '../../app.config';
 import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
+import {
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarModule,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
 import { TodosService } from '../../services/todos.service';
 import { PaginationModel } from '../../models/pagination-model';
 import {
@@ -19,6 +24,7 @@ import {
 import { TodoListItemDetailViewComponent } from './todo-list-item-detail-view/todo-list-item-detail-view.component';
 import { DialogData } from '../../models/dialog-data';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { _MatListItemGraphicBase } from '@angular/material/list';
 
 @Component({
   selector: 'app-todos',
@@ -26,9 +32,10 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
   imports: [
     NgIf,
     NgFor,
+    AsyncPipe,
     MatButtonModule,
     MatDialogModule,
-    AsyncPipe,
+    MatSnackBarModule,
     TodoListItemComponent,
   ],
   templateUrl: './todos.component.html',
@@ -38,6 +45,7 @@ export class TodosComponent implements OnInit {
   pagingModel: PaginationModel<ITodoListItem> | null = null;
 
   constructor(
+    private _snackBar: MatSnackBar,
     @Inject(MatDialog) private dialog: MatDialog,
     private todoService: TodosService
   ) {}
@@ -82,12 +90,15 @@ export class TodosComponent implements OnInit {
   onDeleted(id: number) {
     const pageData = this.pageData!;
     for (var i = pageData.length - 1; i >= 0; i--) {
-      {
-        if (pageData[i].id === id) {
-          pageData.splice(i, 1);
-          break;
-        }
+      if (pageData[i].id === id) {
+        pageData.splice(i, 1);
+        this._snackBar.open('Todo item removed successfuly!', 'Splash', {
+          horizontalPosition: 'start',
+          verticalPosition: 'top'
+        })
+        break;
       }
     }
+    //
   }
 }

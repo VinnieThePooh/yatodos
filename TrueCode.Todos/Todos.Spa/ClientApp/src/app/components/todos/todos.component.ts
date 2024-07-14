@@ -18,6 +18,7 @@ import {
 } from '@angular/material/dialog';
 import { TodoListItemDetailViewComponent } from './todo-list-item-detail-view/todo-list-item-detail-view.component';
 import { DialogData } from '../../models/dialog-data';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-todos',
@@ -25,7 +26,7 @@ import { DialogData } from '../../models/dialog-data';
   imports: [
     NgIf,
     NgFor,
-    MatButtonModule,
+    MatButtonModule,    
     MatDialogModule,
     AsyncPipe,
     TodoListItemComponent,

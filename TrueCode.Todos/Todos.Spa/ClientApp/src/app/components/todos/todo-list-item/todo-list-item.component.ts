@@ -14,6 +14,8 @@ import {
   MatButtonToggleGroup,
 } from '@angular/material/button-toggle';
 import { TodosService } from '../../../services/todos.service';
+import { priorityColorMap, priorityNameMap } from '../../../models/priority-maps';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-todo-list-item',
@@ -26,6 +28,7 @@ import { TodosService } from '../../../services/todos.service';
     MatCardContent,
     MatCardActions,
     MatButtonToggle,
+    NgStyle,
     MatButtonToggleGroup,
   ],
   templateUrl: './todo-list-item.component.html',
@@ -36,8 +39,30 @@ export class TodoListItemComponent {
 
   constructor(private todoService: TodosService) {}
 
-  onChange(v: MatButtonToggleChange) {
-    console.log(`Value changed: ${v.value}`);
-    this.todoService.updatePriority(this.item.id, Number(v.value)).subscribe(r => console.debug(r));
+  onChange(v: MatButtonToggleChange) {        
+
+    console.log(`Priority: ${this.item.priority}`);
+    const newValue = Number(v.value);
+
+    
+    this.todoService.updatePriority(this.item.id, newValue).subscribe(r => {      
+      this.item.priority = newValue;
+    });
+  }
+
+  isChecked(elementRef:MatButtonToggle): boolean {
+    return elementRef.value == this.item.priority;
+  }
+
+  get priorityName(): string {
+    return priorityNameMap[this.item.priority];
+  }
+
+  get priorityColor(): string {
+    return priorityColorMap[this.item.priority];
+  }
+
+  get priorityColorMap(): string[] {
+    return priorityColorMap;
   }
 }

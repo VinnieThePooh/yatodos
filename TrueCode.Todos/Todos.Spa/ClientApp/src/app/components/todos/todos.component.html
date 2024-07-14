@@ -1,16 +1,14 @@
 <div>
-    <div class="add">
-        <button mat-stroked-button (click)="addNewTodo()">Add new</button>
+  <div class="add">
+    <button mat-stroked-button (click)="addNewTodo()">Add new</button>
+  </div>
+  <div *ngIf="" class="filter"></div>
+  <div class="todo-list-view">
+    <div *ngIf="pageData">
+      <div list-item-container *ngFor="let item of pageData">
+        <app-todo-list-item (deleted)="onDeleted($event)" [item]="item"></app-todo-list-item>
+      </div>
     </div>
-    <div *ngIf="" class="filter">
-    </div>    
-<div class="todo-list-view">
-    <div *ngIf="(pageData)">
-        <div list-item-container *ngFor="let item of pageData">
-            <app-todo-list-item [item]="item"></app-todo-list-item>
-        </div>
-    </div>
-</div>
-<div></div>
-<!-- <button mat-button color="primary" (click)="authTest()">Click me!</button> -->
+  </div>
+  <div></div>
 </div>

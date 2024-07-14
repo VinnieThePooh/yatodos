@@ -87,7 +87,7 @@ public class TodosController : Controller
     [HttpDelete("{todoId:int}")]
     public async Task<IActionResult> Index(int todoId)
     {
-        await _todoService.DeleteTodo(todoId);
+        await _todoService.DeleteTodo(todoId, CurrentUserId);
         return NoContent();
     }
 }

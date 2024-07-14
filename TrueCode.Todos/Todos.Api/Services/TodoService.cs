@@ -85,10 +85,10 @@ public class TodoService : ITodoService
             .ExecuteUpdateAsync((setters) => setters.SetProperty(x => x.PriorityId, priorityId));
     }
 
-    public async Task DeleteTodo(int todoId)
+    public async Task DeleteTodo(int todoId, int userId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        await context.Set<TodoItem>().Where(x => x.Id == todoId).ExecuteDeleteAsync();
+        await context.Set<TodoItem>().Where(x => x.Id == todoId && x.UserId == userId).ExecuteDeleteAsync();
     }
 
     private static int GetPageCount(int totalCount, int pageSize)

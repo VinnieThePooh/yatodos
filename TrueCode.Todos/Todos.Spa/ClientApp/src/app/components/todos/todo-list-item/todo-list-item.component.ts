@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ITodoListItem } from '../../../models/todos/todo-list-item';
 import {
   MatCard,
@@ -35,7 +35,9 @@ import { NgStyle } from '@angular/common';
   styleUrl: './todo-list-item.component.css',
 })
 export class TodoListItemComponent {
+
   @Input() item!: ITodoListItem;
+  @Output() deleted = new EventEmitter<number>();
 
   constructor(private todoService: TodosService) {}
 
@@ -65,4 +67,11 @@ export class TodoListItemComponent {
   get priorityColorMap(): string[] {
     return priorityColorMap;
   }
+
+  onDelete() {
+      const id = this.item.id;
+      this.todoService.deleteTodo(id).subscribe(r => {
+        this.deleted.emit(id)
+      })
+    }
 }

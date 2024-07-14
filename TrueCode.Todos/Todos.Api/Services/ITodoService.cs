@@ -13,5 +13,5 @@ public interface ITodoService
 
     Task UpdatePriority(UpdatePriorityRequest request);
 
-    Task DeleteTodo(int todoId);
+    Task DeleteTodo(int todoId, int userId);
 }

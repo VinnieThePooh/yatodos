@@ -26,7 +26,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
   imports: [
     NgIf,
     NgFor,
-    MatButtonModule,    
+    MatButtonModule,
     MatDialogModule,
     AsyncPipe,
     TodoListItemComponent,
@@ -34,25 +34,21 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
   templateUrl: './todos.component.html',
   styleUrl: './todos.component.css',
 })
-export class TodosComponent implements OnInit {  
-  pagingModel: PaginationModel<ITodoListItem> | null = null;  
+export class TodosComponent implements OnInit {
+  pagingModel: PaginationModel<ITodoListItem> | null = null;
 
   constructor(
     @Inject(MatDialog) private dialog: MatDialog,
     private todoService: TodosService
-  ) {    
-    
-  }  
+  ) {}
 
   ngOnInit(): void {
-    
-    this.todoService.getTodos().subscribe(r => {            
-      this.pagingModel = r;       
+    this.todoService.getTodos().subscribe((r) => {
+      this.pagingModel = r;
     });
-    
   }
 
-  get pageData():ITodoListItem[] | null {
+  get pageData(): ITodoListItem[] | null {
     return this.pagingModel?.pageData || null;
   }
 
@@ -74,12 +70,24 @@ export class TodosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       //cancel edit in any way
-      if (!result) return;     
-      
+      if (!result) return;
+
       //nah, immutability does create memory traffic
       var data = this.pagingModel!.pageData;
       data.unshift(result);
-      this.pagingModel!.pageData  = [...data];
+      this.pagingModel!.pageData = [...data];
     });
+  }
+
+  onDeleted(id: number) {
+    const pageData = this.pageData!;
+    for (var i = pageData.length - 1; i >= 0; i--) {
+      {
+        if (pageData[i].id === id) {
+          pageData.splice(i, 1);
+          break;
+        }
+      }
+    }
   }
 }

@@ -75,6 +75,16 @@ public class TodosController : Controller
         await _todoService.UpdateTodo(request);
         return NoContent();
     }
+    
+    [HttpPut("priority")]
+    public async Task<IActionResult> UpdatePriority(UpdatePriorityRequest request)
+    {
+        if (CurrentUserId != request.UserId)
+            return Unauthorized();
+        
+        await _todoService.UpdatePriority(request);
+        return NoContent();
+    }
 
     [HttpDelete("{todoId:int}")]
     public async Task<IActionResult> Index(int todoId)

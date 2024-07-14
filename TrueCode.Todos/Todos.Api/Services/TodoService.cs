@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Todos.DataAccess;
 using Todos.Models.Domain;
+using TrueCode.Todos.Controllers;
 using TrueCode.Todos.Extensions;
 using TrueCode.Todos.Models;
 
@@ -41,6 +42,7 @@ public class TodoService : ITodoService
 
     public async Task<CreateTodoResponse> CreateTodo(CreateTodoRequest request, int userId, DateTime? timeTrace)
     {
+        await using var context = await _contextFactory.CreateDbContextAsync();
         var item = new TodoItem
         {
             CreateDate = timeTrace ?? DateTime.UtcNow,
@@ -48,11 +50,9 @@ public class TodoService : ITodoService
             DueDate = request.DueDate,
             Description = request.Description,
             Title = request.Title,
-            PriorityId =  await FindPriorityId(request.Priority),
+            PriorityId =  await FindPriorityId(request.Priority, context),
             Completed = request.IsCompleted ?? false
         };
-        
-        await using var context = await _contextFactory.CreateDbContextAsync();
         
         context.Set<TodoItem>().Add(item);
         await context.SaveChangesAsync();
@@ -64,7 +64,7 @@ public class TodoService : ITodoService
         await using var context = await _contextFactory.CreateDbContextAsync();
         
         //todo: get from memory
-        var priorityId = await FindPriorityId(request.Priority);
+        var priorityId = await FindPriorityId(request.Priority, context);
         await context.Set<TodoItem>().Where(x => x.Id == request.Id)
             .ExecuteUpdateAsync((setters) => setters
                 .SetProperty(x => x.Title, request.Title)
@@ -73,6 +73,16 @@ public class TodoService : ITodoService
                 .SetProperty(x => x.DueDate, request.DueDate)
                 .SetProperty(x => x.PriorityId, priorityId)
             );
+    }
+
+    public async Task UpdatePriority(UpdatePriorityRequest request)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        
+        //todo: get from memory
+        var priorityId = await FindPriorityId(request.Priority, context);
+        await context.Set<TodoItem>().Where(x => x.Id == request.TodoId && x.UserId == request.UserId)
+            .ExecuteUpdateAsync((setters) => setters.SetProperty(x => x.PriorityId, priorityId));
     }
 
     public async Task DeleteTodo(int todoId)
@@ -91,9 +101,8 @@ public class TodoService : ITodoService
     }
     
     //todo: should be cached
-    async Task<int> FindPriorityId(PriorityLevel priorityValue)
+    async Task<int> FindPriorityId(PriorityLevel priorityValue, TodosContext context)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync();
         var priority = await context.Set<TodoPriority>().FirstAsync(x => x.Value == priorityValue);
         return priority.Id;
     }

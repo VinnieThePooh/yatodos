@@ -1,8 +1,5 @@
-using System.Runtime.Serialization.Json;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

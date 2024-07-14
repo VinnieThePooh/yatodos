@@ -1,11 +1,16 @@
-<p>todos works!</p>
 <div>
+    <div class="add">
+        <button mat-stroked-button (click)="addNewTodo()">Add new</button>
+    </div>
+    <div *ngIf="" class="filter">
+    </div>    
 <div class="todo-list-view">
     <div *ngIf="(this.pagingModel | async)">
         <div list-item-container *ngFor="let item of (this.pagingModel | async)?.pageData">
             <app-todo-list-item [item]="item"></app-todo-list-item>
         </div>
-    </div>     
+    </div>
 </div>
+<div></div>
 <!-- <button mat-button color="primary" (click)="authTest()">Click me!</button> -->
 </div>

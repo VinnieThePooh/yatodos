@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TodoListItem } from '../../../models/todos/todo-list-item';
+import { ITodoListItem } from '../../../models/todos/todo-list-item';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 
 @Component({
@@ -10,5 +10,5 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle
   styleUrl: './todo-list-item.component.css'
 })
 export class TodoListItemComponent {
-  @Input() item!: TodoListItem;
+  @Input() item!: ITodoListItem;
 }

@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>{{ dialogTitle }}</h1>
+<div class="container">
+  <h1>Edit todo</h1>
+  <form #todoForm="ngForm">
+    <div class="form-group">
+      <mat-form-field>
+        <mat-label>Title</mat-label>
+        <input matInput [(ngModel)]="todoItem.title" name="title" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Priority</mat-label>
+        <mat-select [(ngModel)]="todoItem.priority" name="priority">
+          <mat-option value="0">Relaxed</mat-option>
+          <mat-option value="1">Moderate</mat-option>
+          <mat-option value="2">Urgent</mat-option>
+          <mat-option value="3">Extremely urgent</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Due date</mat-label>
+        <input matInput [(ngModel)]="todoItem.dueDate" name="dueDate" [matDatepicker]="myDatepicker">
+        <mat-datepicker-toggle matSuffix [for]="myDatepicker"></mat-datepicker-toggle>
+        <mat-datepicker #myDatepicker></mat-datepicker>
+      </mat-form-field>   
+      <mat-form-field>
+        <mat-label>Description</mat-label>
+        <textarea [(ngModel)]="todoItem.description" matInput name="description"></textarea>
+      </mat-form-field>      
+        <mat-label>IsCompleted</mat-label>
+        <mat-checkbox class="example-margin" matInput [(ngModel)]="todoItem.isCompleted" name="isCompleted"
+          >IsCompleted</mat-checkbox>            
+      <input type="hidden" [(ngModel)]="todoItem.id" name="id">
+    </div>
+    <button mat-button (click)="onCancelClick()">Cancel</button>
+    <button mat-button (click)="onSubmitClick()" cdkFocusInitial> <!--[mat-dialog-close]="todoItem"-->
+      {{ submitTitle }}
+    </button>
+  </form>
+</div>

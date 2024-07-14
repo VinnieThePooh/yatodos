@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { IUserProfile } from '../models/user-models';
 import { Nullable, UserProfileService } from './user-profile.service';
 import { Observable } from 'rxjs';
-import { TodoListItem } from '../models/todos/todo-list-item';
+import { ITodoCreateRequest } from '../models/todos/todo-request-models';
+import { ITodoListItem } from '../models/todos/todo-list-item';
 import { ApiUrls } from '../app.config';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { PaginationModel } from '../models/pagination-model';
@@ -24,22 +25,23 @@ export class TodosService {
   getTodos(
     pageNumber?: number,
     pageSize?: number
-  ): Observable<PaginationModel<TodoListItem>> {
+  ): Observable<PaginationModel<ITodoListItem>> {
     let parameters = new HttpParams();
     parameters.append('pageNumber', pageNumber ?? Defaults.PAGE_NUMBER);
     parameters.append('pageSize', pageSize ?? Defaults.PAGE_SIZE);
     parameters.append('userId', this.userProfile!.userId);
-    return this.httpClient.get<PaginationModel<TodoListItem>>(this.targetUrl, {
+    return this.httpClient.get<PaginationModel<ITodoListItem>>(this.targetUrl, {
       params: parameters,
     });
   }
 
-  createTodo(listItem: TodoListItem): Observable<number> {
-    return this.httpClient.post<number>(this.targetUrl, listItem);
+  createTodo(request: ITodoCreateRequest): Observable<number> {
+    console.log(JSON.stringify(request));
+    return this.httpClient.post<number>(this.targetUrl, request);
   }
 
   //todo: return type?
-  updateTodo(listItem: TodoListItem): Observable<object> {
+  updateTodo(listItem: ITodoListItem): Observable<object> {    
     return this.httpClient.put(this.targetUrl, listItem);
   }
 

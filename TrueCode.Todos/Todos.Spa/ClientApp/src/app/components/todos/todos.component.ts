@@ -1,12 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { BaseUrl } from '../../app.config';
-import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatSnackBar,
-  MatSnackBarHorizontalPosition,
   MatSnackBarModule,
-  MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 import { TodosService } from '../../services/todos.service';
 import { PaginationModel } from '../../models/pagination-model';
@@ -19,7 +15,6 @@ import { TodoListItemComponent } from './todo-list-item/todo-list-item.component
 import {
   MatDialog,
   MatDialogModule,
-  MatDialogRef,
 } from '@angular/material/dialog';
 import { TodoListItemDetailViewComponent } from './todo-list-item-detail-view/todo-list-item-detail-view.component';
 import { DialogData } from '../../models/dialog-data';

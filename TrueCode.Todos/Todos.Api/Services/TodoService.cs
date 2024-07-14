@@ -50,7 +50,7 @@ public class TodoService : ITodoService
             DueDate = request.DueDate,
             Description = request.Description,
             Title = request.Title,
-            PriorityId =  await FindPriorityId(request.Priority, context),
+            PriorityId =  await FindPriorityId((PriorityLevel)request.Priority, context),
             Completed = request.IsCompleted ?? false
         };
         
@@ -64,7 +64,7 @@ public class TodoService : ITodoService
         await using var context = await _contextFactory.CreateDbContextAsync();
         
         //todo: get from memory
-        var priorityId = await FindPriorityId(request.Priority, context);
+        var priorityId = await FindPriorityId((PriorityLevel)request.Priority, context);
         await context.Set<TodoItem>().Where(x => x.Id == request.Id)
             .ExecuteUpdateAsync((setters) => setters
                 .SetProperty(x => x.Title, request.Title)

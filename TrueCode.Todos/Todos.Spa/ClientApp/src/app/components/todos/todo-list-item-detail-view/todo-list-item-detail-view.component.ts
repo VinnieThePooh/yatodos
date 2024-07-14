@@ -69,7 +69,8 @@ export class TodoListItemDetailViewComponent {
     };
 
     this.todoService.createTodo(request).subscribe((r) => {
-      this.todoItem.id = r;
+      this.todoItem.id = r.id;
+      this.todoItem.createDate = r.createDate;
       this.dialogRef.close(this.todoItem);
     });
     }  

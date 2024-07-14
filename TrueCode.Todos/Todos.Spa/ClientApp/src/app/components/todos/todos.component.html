@@ -5,8 +5,8 @@
     <div *ngIf="" class="filter">
     </div>    
 <div class="todo-list-view">
-    <div *ngIf="(this.pagingModel | async)">
-        <div list-item-container *ngFor="let item of (this.pagingModel | async)?.pageData">
+    <div *ngIf="(pageData)">
+        <div list-item-container *ngFor="let item of pageData">
             <app-todo-list-item [item]="item"></app-todo-list-item>
         </div>
     </div>

@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { BaseUrl } from '../../app.config';
 import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { Observable, catchError, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
 import { TodosService } from '../../services/todos.service';
 import { PaginationModel } from '../../models/pagination-model';
 import {
@@ -33,22 +33,26 @@ import { DialogData } from '../../models/dialog-data';
   templateUrl: './todos.component.html',
   styleUrl: './todos.component.css',
 })
-export class TodosComponent implements OnInit {
-  pagingModel?: Observable<PaginationModel<ITodoListItem>>;
+export class TodosComponent implements OnInit {  
+  pagingModel: PaginationModel<ITodoListItem> | null = null;  
 
   constructor(
     @Inject(MatDialog) private dialog: MatDialog,
     private todoService: TodosService
-  ) {}
-
-  // authTest() {
-  //   this.httpClient
-  //     .get(BaseUrl + '/api/todos/getuser')
-  //     .subscribe((r) => console.log(r));
-  // }
+  ) {    
+    
+  }  
 
   ngOnInit(): void {
-    this.pagingModel = this.todoService.getTodos();
+    
+    this.todoService.getTodos().subscribe(r => {            
+      this.pagingModel = r;       
+    });
+    
+  }
+
+  get pageData():ITodoListItem[] | null {
+    return this.pagingModel?.pageData || null;
   }
 
   addNewTodo() {
@@ -69,11 +73,12 @@ export class TodosComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       //cancel edit in any way
-      if (!result) return;
-
-      //completed edit
-      console.log(typeof result);
-      //todo: add to the list here
+      if (!result) return;     
+      
+      //nah, immutability does create memory traffic
+      var data = this.pagingModel!.pageData;
+      data.unshift(result);
+      this.pagingModel!.pageData  = [...data];
     });
   }
 }

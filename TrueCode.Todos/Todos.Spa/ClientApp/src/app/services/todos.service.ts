@@ -7,6 +7,7 @@ import { ITodoListItem } from '../models/todos/todo-list-item';
 import { ApiUrls } from '../app.config';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { PaginationModel } from '../models/pagination-model';
+import { ITodoCreateResponse } from '../models/todos/todo-response-models';
 
 @Injectable({
   providedIn: 'root',
@@ -35,9 +36,9 @@ export class TodosService {
     });
   }
 
-  createTodo(request: ITodoCreateRequest): Observable<number> {
+  createTodo(request: ITodoCreateRequest): Observable<ITodoCreateResponse> {
     console.log(JSON.stringify(request));
-    return this.httpClient.post<number>(this.targetUrl, request);
+    return this.httpClient.post<ITodoCreateResponse>(this.targetUrl, request);
   }
 
   //todo: return type?

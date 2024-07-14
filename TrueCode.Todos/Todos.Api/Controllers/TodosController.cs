@@ -44,6 +44,9 @@ public class TodosController : Controller
     [HttpPut]
     public async Task<IActionResult> Index(UpdateTodoRequest request)
     {
+        if (CurrentUserId != request.UserId)
+            return Unauthorized();
+        
         await _todoService.UpdateTodo(request);
         return NoContent();
     }

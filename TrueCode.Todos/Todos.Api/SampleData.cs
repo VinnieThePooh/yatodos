@@ -63,8 +63,6 @@ public static class SampleData
             if (!userManager.Users.Any(u => u.UserName == user.UserName))
             {
                 user.PasswordHash = userManager.PasswordHasher.HashPassword(user, password);
-                //our domain part
-                user.User = new User { UserName = user.UserName };
                 _ = await userManager.CreateAsync(user);
             }
             await AssignRoles(userManager, user, rolesToAdd);

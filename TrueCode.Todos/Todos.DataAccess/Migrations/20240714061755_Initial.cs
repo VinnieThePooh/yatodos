@@ -176,24 +176,6 @@ namespace Todos.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false),
-                    UserName = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_AppUsers_Id",
-                        column: x => x.Id,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Todos",
                 columns: table => new
                 {
@@ -203,6 +185,7 @@ namespace Todos.DataAccess.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Completed = table.Column<bool>(type: "boolean", nullable: false),
                     DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     PriorityId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -210,16 +193,16 @@ namespace Todos.DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Todos", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Todos_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Todos_TodoPriorities_PriorityId",
                         column: x => x.PriorityId,
                         principalTable: "TodoPriorities",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Todos_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -318,13 +301,10 @@ namespace Todos.DataAccess.Migrations
                 name: "AppRoles");
 
             migrationBuilder.DropTable(
-                name: "TodoPriorities");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "AppUsers");
+
+            migrationBuilder.DropTable(
+                name: "TodoPriorities");
         }
     }
 }

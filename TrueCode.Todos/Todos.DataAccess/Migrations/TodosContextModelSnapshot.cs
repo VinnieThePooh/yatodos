@@ -312,20 +312,6 @@ namespace Todos.DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Todos.Models.Domain.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Todos.Models.Domain.AppRole", null)
@@ -383,38 +369,21 @@ namespace Todos.DataAccess.Migrations
                         .WithMany("TodoItems")
                         .HasForeignKey("PriorityId");
 
-                    b.HasOne("Todos.Models.Domain.User", "User")
-                        .WithMany("TodoItems")
+                    b.HasOne("Todos.DataAccess.Identity.AppUser", null)
+                        .WithMany("Todos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Priority");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Todos.Models.Domain.User", b =>
-                {
-                    b.HasOne("Todos.DataAccess.Identity.AppUser", null)
-                        .WithOne("User")
-                        .HasForeignKey("Todos.Models.Domain.User", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Todos.DataAccess.Identity.AppUser", b =>
                 {
-                    b.Navigation("User")
-                        .IsRequired();
+                    b.Navigation("Todos");
                 });
 
             modelBuilder.Entity("Todos.Models.Domain.TodoPriority", b =>
-                {
-                    b.Navigation("TodoItems");
-                });
-
-            modelBuilder.Entity("Todos.Models.Domain.User", b =>
                 {
                     b.Navigation("TodoItems");
                 });

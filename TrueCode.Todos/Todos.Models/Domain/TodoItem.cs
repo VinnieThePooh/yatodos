@@ -15,8 +15,6 @@ public class TodoItem
     public DateTime CreateDate { get; set; }
 
     public int UserId { get; set; }
-
-    public User User { get; set; }
     
     public int PriorityId { get; set; }
 

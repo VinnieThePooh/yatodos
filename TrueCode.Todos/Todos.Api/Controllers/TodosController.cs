@@ -30,7 +30,7 @@ public class TodosController : Controller
     
     [HttpGet("getuser")]
     [Authorize(Roles = RoleNames.USER)]
-    public async Task<ActionResult<User>> GetUser()
+    public async Task<ActionResult<AppUser>> GetUser()
     {
         var id = User.GetUserId<int>();
         

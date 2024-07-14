@@ -24,7 +24,6 @@ public class TodosContext : IdentityDbContext<AppUser, AppRole, int>
         builder.ApplyConfiguration(new AppUserConfiguration());
         builder.ApplyConfiguration(new AppRoleConfiguration());
         builder.ApplyConfiguration(new TodoPriorityConfiguration());
-        builder.ApplyConfiguration(new UserConfiguration());
     }
 }
 

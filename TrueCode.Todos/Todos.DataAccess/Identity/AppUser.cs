@@ -5,5 +5,5 @@ namespace Todos.DataAccess.Identity;
 
 public class AppUser : IdentityUser<int>
 {
-    public User User { get; set; }
+    public List<TodoItem> Todos { get; set; } = [];
 }

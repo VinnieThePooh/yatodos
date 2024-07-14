@@ -43,7 +43,7 @@ public class TodoService : ITodoService
     {
         var item = new TodoItem
         {
-            CreateDate = timeTrace ?? DateTime.Now,
+            CreateDate = timeTrace ?? DateTime.UtcNow,
             UserId = userId,
             DueDate = request.DueDate,
             Description = request.Description,

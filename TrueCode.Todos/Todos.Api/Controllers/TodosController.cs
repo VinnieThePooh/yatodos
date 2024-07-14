@@ -9,7 +9,7 @@ using TrueCode.Todos.Services;
 
 namespace TrueCode.Todos.Controllers;
 
-// [Authorize("User")]
+[Authorize(Roles = RoleNames.USER)]
 [ApiController]
 [Route("api/[controller]")]
 public class TodosController : Controller
@@ -24,32 +24,6 @@ public class TodosController : Controller
         _todoService = todoService ?? throw new ArgumentNullException(nameof(todoService));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-    
-    [HttpGet("getuser")]
-    [Authorize(Roles = RoleNames.USER)]
-    public async Task<ActionResult<AppUser>> GetUser()
-    {
-        var id = User.GetUserId<int>();
-        
-        Console.WriteLine("Claims received:");
-        foreach (var claim in User.Claims)
-        {
-            Console.WriteLine($"{claim.Type}: {claim.Value}");
-        }
-        
-        if(id == default)
-            return Unauthorized("No user ID claim present in token.");
-        
-        try
-        {
-            var user = await _userManager.FindByIdAsync(id.ToString()); 
-            return Ok(user);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
     
     [HttpGet]

@@ -39,7 +39,7 @@ public class TodoService : ITodoService
         };
     }
 
-    public async Task<int> CreateTodo(CreateTodoRequest request, int userId, DateTime? timeTrace)
+    public async Task<CreateTodoResponse> CreateTodo(CreateTodoRequest request, int userId, DateTime? timeTrace)
     {
         var item = new TodoItem
         {
@@ -56,7 +56,7 @@ public class TodoService : ITodoService
         
         context.Set<TodoItem>().Add(item);
         await context.SaveChangesAsync();
-        return item.Id;
+        return new CreateTodoResponse(item.Id, item.CreateDate);
     }
 
     public async Task UpdateTodo(UpdateTodoRequest request)

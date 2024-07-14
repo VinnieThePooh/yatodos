@@ -1,4 +1,6 @@
+using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -64,9 +66,13 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationBuilder();
-builder.Services.AddControllers()
-    .AddJsonOptions(x => x.JsonSerializerOptions.Converters
-        .Add(new JsonNumberEnumConverter<PriorityLevel>()));
+builder.Services
+    .AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
+    .AddJsonOptions(x =>
+    {
+        x.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

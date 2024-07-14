@@ -2,7 +2,17 @@
     <mat-card-header>
       <div mat-card-avatar class="example-header-image"></div>
       <mat-card-title>{{item.title}}</mat-card-title>
-      <mat-card-subtitle>Приоритет: {{item.priorityName}}</mat-card-subtitle>
+      <mat-card-subtitle>        
+        Приоритет: {{item.priorityName}}
+        <p>
+            <mat-button-toggle-group (change)="onChange($event)" name="fontStyle" aria-label="Font Style">
+                <mat-button-toggle value="0">Relaxed</mat-button-toggle>
+                <mat-button-toggle value="1">Moderate</mat-button-toggle>
+                <mat-button-toggle value="2">Urgent</mat-button-toggle>
+                <mat-button-toggle value="3">Extremely urgent</mat-button-toggle>
+              </mat-button-toggle-group>
+        </p>
+    </mat-card-subtitle>
     </mat-card-header>    
     <mat-card-content>
       <p>

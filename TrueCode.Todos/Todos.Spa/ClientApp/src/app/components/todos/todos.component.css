@@ -1,11 +1,10 @@
 .todo-list-view {
     background-color: white;
-    width: 300px;
+    width: 420px;
 }
 
 .list-item-container {
-    background-color: white;
-    max-width: 300px;
+    background-color: white;    
 }
 
 .add {

@@ -46,6 +46,20 @@ export class TodosService {
     return this.httpClient.put(this.targetUrl, listItem);
   }
 
+  updatePriority(todoId:number, newPriority:number): Observable<object> {
+
+    var userId = this.profileService.UserProfile!.userId;
+    var url = `${this.targetUrl}/priority`;
+
+    const request = {
+      userId: userId,
+      priority: newPriority,
+      todoId: todoId
+    };
+
+    return this.httpClient.put(url, request);
+  }
+
   deleteTodo(id:number): Observable<object> {    
     return this.httpClient.delete(this.targetUrl + "/" + id);
   }

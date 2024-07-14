@@ -9,7 +9,7 @@ export interface ITodoListItem {
   createDate?: Date;
 }
 
-export const DeafultListItem: ITodoListItem = {
+export const DefaultListItem: ITodoListItem = {
   id: 0,
   title: '',
   description: '',

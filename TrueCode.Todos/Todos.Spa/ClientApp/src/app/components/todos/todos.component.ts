@@ -7,7 +7,7 @@ import {
 import { TodosService } from '../../services/todos.service';
 import { PaginationModel } from '../../models/pagination-model';
 import {
-  DeafultListItem,
+  DefaultListItem,
   ITodoListItem,
 } from '../../models/todos/todo-list-item';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
@@ -18,7 +18,6 @@ import {
 } from '@angular/material/dialog';
 import { TodoListItemDetailViewComponent } from './todo-list-item-detail-view/todo-list-item-detail-view.component';
 import { DialogData } from '../../models/dialog-data';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { _MatListItemGraphicBase } from '@angular/material/list';
 
 @Component({
@@ -58,7 +57,7 @@ export class TodosComponent implements OnInit {
   addNewTodo() {
     const dialogData: DialogData<ITodoListItem> = {
       newObject: true,
-      data: DeafultListItem,
+      data: Object.assign({}, DefaultListItem),
     };
 
     //open modal and add

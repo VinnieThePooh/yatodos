@@ -11,6 +11,6 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
     {
         builder.ToTable("AppUsers");
         builder.HasKey(x => x.Id);
-        builder.HasMany(x => x.Todos).WithOne().HasForeignKey(x => x.UserId).IsRequired();
+        builder.HasMany(x => x.Todos).WithOne().HasForeignKey(x => x.UserId).IsRequired(false);
     }
 }

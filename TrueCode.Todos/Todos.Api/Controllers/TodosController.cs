@@ -35,6 +35,14 @@ public class TodosController : Controller
         return model;
     }
     
+    [AllowAnonymous]
+    [HttpPost("filter")]
+    public async Task<PaginationModel<TodoListItem>> Index(int? pageSize, int? pageNumber, [FromBody]TodoFilter filter)
+    {
+        var model = await _todoService.GetTodos(pageNumber, pageSize, CurrentUserId, filter);
+        return model;
+    }
+    
     [HttpPost]
     public async Task<ActionResult<int>> Index([FromServices]IValidator<CreateTodoRequest> validator, CreateTodoRequest request)
     {

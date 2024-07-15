@@ -82,7 +82,7 @@ public class TodoService : ITodoService
         await using var context = await _contextFactory.CreateDbContextAsync();
         
         //todo: get from memory
-        var priorityId = await FindPriorityId(request.Priority, context);
+        var priorityId = await FindPriorityId((PriorityLevel)request.Priority, context);
         await context.Set<TodoItem>().Where(x => x.Id == request.TodoId && x.UserId == request.UserId)
             .ExecuteUpdateAsync((setters) => setters.SetProperty(x => x.PriorityId, priorityId));
     }

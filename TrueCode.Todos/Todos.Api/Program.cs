@@ -12,6 +12,7 @@ using Todos.Models.Domain;
 using TrueCode.Todos;
 using TrueCode.Todos.Auth;
 using TrueCode.Todos.Controllers;
+using TrueCode.Todos.Exceptions;
 using TrueCode.Todos.Models;
 using TrueCode.Todos.Services;
 using TrueCode.Todos.Validation;
@@ -28,6 +29,7 @@ builder.Services.AddSingleton<IValidator<UpdateTodoRequest>, UpdateRequestValida
 builder.Services.AddSingleton<IValidator<UpdatePriorityRequest>, UpdatePriorityValidator>();
 builder.Services.AddSingleton<ITodoService, TodoService>();
 builder.Services.AddDbContextFactory<TodosContext>(options => options.UseNpgsql(conString));
+builder.Services.AddExceptionHandler<ExceptionsHandler>();
 
 builder.Services.AddIdentity<AppUser, AppRole>()
     .AddUserStore<UserStore<AppUser, AppRole, TodosContext, int>>()
@@ -109,6 +111,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+    app.UseExceptionHandler();
+
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TodosContext>();

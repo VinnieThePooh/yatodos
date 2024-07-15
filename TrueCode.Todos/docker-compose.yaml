@@ -1,0 +1,44 @@
+services:
+    todos.api:
+      container_name: todos.api
+      hostname: todos.api
+      restart: always
+      image: todos.api:latest
+      build:
+       context: ./
+       dockerfile: Todos.Api/Dockerfile
+      environment:
+        ASPNETCORE_ENVIRONMENT: "Production"
+        ASPNETCORE_URLS: "http://*:5146"
+        ConnectionStrings__DefaultConnection: "User ID=postgres;Password=pg_secret;Host=postgres_db;Port=5432;Database=Todos;Pooling=true"
+      ports:
+        - "5147:5146"
+      depends_on:
+        - db
+
+    # pgadmin:
+    #   container_name: pgadmin4
+    #   restart: always
+    #   image: dpage/pgadmin4
+    #   ports:
+    #    - 5051:80
+    #   environment:
+    #    - PGADMIN_DEFAULT_EMAIL=user@domain.com
+    #    - PGADMIN_DEFAULT_PASSWORD=password
+    #   depends_on:
+    #     - db             
+
+    db:
+      container_name: postgres-16.3-bookworm-slim
+      hostname: postgres_db
+      restart: always
+      image: postgres:16.3      
+      # ports:
+      #   - "5432:5432"
+      environment:
+       - POSTGRES_PASSWORD=pg_secret
+
+    
+
+    
+    

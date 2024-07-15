@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using TrueCode.Todos.Constants;
 using TrueCode.Todos.Extensions;
 using TrueCode.Todos.Models;
 using TrueCode.Todos.Services;
+using TrueCode.Todos.Validation;
 
 namespace TrueCode.Todos.Controllers;
 
@@ -34,28 +36,42 @@ public class TodosController : Controller
     }
     
     [HttpPost]
-    public async Task<ActionResult<int>> Index(CreateTodoRequest request)
+    public async Task<ActionResult<int>> Index([FromServices]IValidator<CreateTodoRequest> validator, CreateTodoRequest request)
     {
+        var validationResult = validator.Validate(request);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.ToDictionary());
+        
         var result = await _todoService.CreateTodo(request, CurrentUserId);
         return Ok(result);
     }
     
     
     [HttpPut]
-    public async Task<IActionResult> Index(UpdateTodoRequest request)
+    public async Task<IActionResult> Index([FromServices]IValidator<UpdateTodoRequest> validator, UpdateTodoRequest request)
     {
+        //todo: how to pass HttpContext data into validator?
         if (CurrentUserId != request.UserId)
             return Unauthorized();
+
+        var result = validator.Validate(request);
+        if (!result.IsValid)
+            return BadRequest(result.ToDictionary());
         
         await _todoService.UpdateTodo(request);
         return NoContent();
     }
     
     [HttpPut("priority")]
-    public async Task<IActionResult> UpdatePriority(UpdatePriorityRequest request)
+    public async Task<IActionResult> UpdatePriority([FromServices]IValidator<UpdatePriorityRequest> validator,  UpdatePriorityRequest request)
     {
+        //todo: how to pass HttpContext data into validator?
         if (CurrentUserId != request.UserId)
             return Unauthorized();
+        
+        var result = validator.Validate(request);
+        if (!result.IsValid)
+            return BadRequest(result.ToDictionary());
         
         await _todoService.UpdatePriority(request);
         return NoContent();

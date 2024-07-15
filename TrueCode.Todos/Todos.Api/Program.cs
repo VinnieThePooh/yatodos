@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,9 @@ using Todos.Models.Domain;
 using TrueCode.Todos;
 using TrueCode.Todos.Auth;
 using TrueCode.Todos.Controllers;
+using TrueCode.Todos.Models;
 using TrueCode.Todos.Services;
+using TrueCode.Todos.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 var conString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -20,6 +23,9 @@ ConfigurationExt.ConfigureSingletonSettings<JwtSettings>(builder);
 
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>();
 
+builder.Services.AddSingleton<IValidator<CreateTodoRequest>, CreateRequestValidator>();
+builder.Services.AddSingleton<IValidator<UpdateTodoRequest>, UpdateRequestValidator>();
+builder.Services.AddSingleton<IValidator<UpdatePriorityRequest>, UpdatePriorityValidator>();
 builder.Services.AddSingleton<ITodoService, TodoService>();
 builder.Services.AddDbContextFactory<TodosContext>(options => options.UseNpgsql(conString));
 

@@ -112,6 +112,12 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.MapGet("", context =>
+{
+    context.Response.Redirect("swagger/index.html");
+    return Task.CompletedTask;
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler(new ExceptionHandlerOptions

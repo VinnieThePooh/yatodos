@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Todos.DataAccess;
+using Todos.DataAccess.Identity;
 using Todos.Models.Domain;
 using TrueCode.Todos.Extensions;
 using TrueCode.Todos.Models;
@@ -74,7 +75,6 @@ public class TodoService : ITodoService, ITodoFilterProvider
         //todo: get from memory
         var priorityId = await FindPriorityIdAsync((PriorityLevel)request.Priority, context);
         
-        //todo: pass userId too?
         await context.Set<TodoItem>().Where(x => x.Id == request.Id && x.UserId == request.UserId)
             .ExecuteUpdateAsync((setters) => setters
                 .SetProperty(x => x.Title, request.Title)
@@ -93,6 +93,24 @@ public class TodoService : ITodoService, ITodoFilterProvider
         var priorityId = await FindPriorityIdAsync((PriorityLevel)request.Priority, context);
         await context.Set<TodoItem>().Where(x => x.Id == request.TodoId && x.UserId == request.UserId)
             .ExecuteUpdateAsync((setters) => setters.SetProperty(x => x.PriorityId, priorityId));
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="todoId"></param>
+    /// <param name="userId"></param>
+    /// <returns>Operation result - succeeded or not</returns>
+    public async Task<bool> AssignTodoToUser(int userId, int todoId)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var user = await context.Set<AppUser>().FirstOrDefaultAsync(x => x.Id == userId);
+        if (user is null)
+            return false;
+
+        var affected = await context.Set<TodoItem>().Where(x => x.Id == todoId)
+            .ExecuteUpdateAsync(x => x.SetProperty(x => x.UserId, userId));
+        return affected > 0;
     }
 
     public async Task DeleteTodo(int todoId, int userId)

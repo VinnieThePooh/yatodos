@@ -35,7 +35,6 @@ public class TodosController : Controller
         return model;
     }
     
-    [AllowAnonymous]
     [HttpPost("filter")]
     public async Task<PaginationModel<TodoListItem>> Index(int? pageSize, int? pageNumber, [FromBody]TodoFilter filter)
     {
@@ -89,6 +88,16 @@ public class TodosController : Controller
     public async Task<IActionResult> Index(int todoId)
     {
         await _todoService.DeleteTodo(todoId, CurrentUserId);
+        return NoContent();
+    }
+    
+    [Authorize(nameof(RoleNames.ADMIN))]
+    [HttpPost("assign")]
+    public async Task<ActionResult<int>> Assign(int userId, int todoId)
+    {
+        var result = await _todoService.AssignTodoToUser(userId, todoId);
+        if (!result)
+            return BadRequest("Incorrect parameters");
         return NoContent();
     }
 }

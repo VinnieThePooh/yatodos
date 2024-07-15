@@ -51,9 +51,8 @@ builder.Services
         {
             ValidateAudience = true,
             ValidateIssuer = true,
-            //todo: to config
-            ValidAudience = "http://localhost:4200",
-            ValidIssuer = "http://localhost:5146",
+            ValidAudience = jwtSettings.Audience,
+            ValidIssuer = jwtSettings.Issuer,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.PrivateKey))
         };
     });
@@ -65,7 +64,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: localAngularApp,
         policy  =>
         {
-            policy.WithOrigins("http://localhost:4200")
+            policy.WithOrigins(jwtSettings.Audience)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

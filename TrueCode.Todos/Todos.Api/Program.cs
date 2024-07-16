@@ -22,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 var conString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 ConfigurationExt.ConfigureSingletonSettings<JwtSettings>(builder);
+ConfigurationExt.ConfigureSingletonSettings<CorsSettings>(builder);
 
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>();
 var corsSettings = builder.Configuration.GetSection(CorsSettings.SectionKey).Get<CorsSettings>();

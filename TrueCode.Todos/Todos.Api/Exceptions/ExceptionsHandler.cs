@@ -21,6 +21,7 @@ public class ExceptionsHandler : IExceptionHandler
             Detail = "Something went wrong",
             Status = httpContext.Response.StatusCode
         }, cancellationToken);
+        await httpContext.Response.StartAsync(CancellationToken.None);
         return true;
     }
 }

@@ -106,10 +106,7 @@ app.MapGet("", context =>
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler(new ExceptionHandlerOptions
-    {
-        ExceptionHandler = _ => Task.CompletedTask
-    });
+    app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = _ => Task.CompletedTask });
 }
 
 await using (var scope = app.Services.CreateAsyncScope())

@@ -10,10 +10,10 @@
 #COPY dist/client-app/browser/* /app/dist
 
 # to run:
-# docker build -t todos.spa -f ./Todos.Spa/Dockerfile - in solution dir
+# docker build -t todos.spa -f ./Todos.Spa/Dockerfile . - in solution dir
 # делаем ход конем, предварительно выполнив команду ng build --configuration production у себя локально
 FROM nginx:stable-alpine as production-stage
+
 COPY ./Todos.Spa/ClientApp/dist/client-app/browser/*  /usr/share/nginx/html/
-COPY ./Todos.Spa/nginx.conf ./conf.d/default.conf
 EXPOSE 80
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

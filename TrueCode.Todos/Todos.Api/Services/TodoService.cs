@@ -129,9 +129,7 @@ public class TodoService : ITodoService, ITodoFilterProvider
 
     Expression<Func<TodoItem, bool>> ITodoFilterProvider.CreateFilterExpression(TodoFilter filter)
     {
-        using var context = _contextFactory.CreateDbContext();
         int? priorityId = filter.Priority.HasValue ? _cacheService.PriorityCache[filter.Priority.Value] : null;
-
         return todo =>
             (filter.IsCompleted != null && todo.Completed == filter.IsCompleted || filter.IsCompleted == null) &&
             (priorityId != null && todo.PriorityId == priorityId || priorityId == null);

@@ -15,16 +15,18 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes), 
     provideAnimationsAsync('noop'),    
     provideHttpClient(
-      withInterceptors([JwtInterceptor])
+      withInterceptors([JwtInterceptor]) 
     ),
     provideNativeDateAdapter()
   ]
 };
 
-export const BaseUrl = "http://localhost:5146";
+//временный  костыль
+export const BaseUrl = "http://localhost:5147";
 
 //todo: refactor
 export const ApiUrls = {  
-  Todos: BaseUrl + "/api/todos"
+  Todos: BaseUrl + "/api/todos",
+  Login: BaseUrl + '/api/auth/login'
 }
 

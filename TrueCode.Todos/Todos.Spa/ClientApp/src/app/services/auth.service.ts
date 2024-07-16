@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IAuthResponse } from '../models/auth-response';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
-import { ApiUrls, BaseUrl } from '../app.config';
+import { ApiUrls } from '../app.config';
 import { UserProfileService } from './user-profile.service';
 
 @Injectable({
@@ -13,22 +13,25 @@ export class AuthService {
 
   constructor(
     private profileService: UserProfileService,
-    private http: HttpClient) {}
+    private http: HttpClient
+  ) {}
 
   login(email: string, password: string): Observable<boolean> {
-     return this.http.post<IAuthResponse>(BaseUrl + '/api/auth/login', {email, password}).pipe(
-      map((response) => {
-        localStorage.setItem('JWT_Token', response.token);
-        this.profileService.setUserProfile(response.profile)        
-        this.isLoggedIn = true;
-        return true;
-      }),
-      catchError((error) => {
-        console.log(error);
-        this.isLoggedIn = false;
-        return of(false);
-      })
-    );
+    return this.http
+      .post<IAuthResponse>(ApiUrls.Login, { email, password })
+      .pipe(
+        map((response) => {
+          localStorage.setItem('JWT_Token', response.token);
+          this.profileService.setUserProfile(response.profile);
+          this.isLoggedIn = true;
+          return true;
+        }),
+        catchError((error) => {
+          console.log(error);
+          this.isLoggedIn = false;
+          return of(false);
+        })
+      );
   }
 
   logout(): void {

@@ -24,6 +24,7 @@ var conString = builder.Configuration.GetConnectionString("DefaultConnection");
 ConfigurationExt.ConfigureSingletonSettings<JwtSettings>(builder);
 
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionKey).Get<JwtSettings>();
+var corsSettings = builder.Configuration.GetSection(CorsSettings.SectionKey).Get<CorsSettings>();
 
 builder.Services.AddSingleton<IValidator<CreateTodoRequest>, CreateRequestValidator>();
 builder.Services.AddSingleton<IValidator<UpdateTodoRequest>, UpdateRequestValidator>();
@@ -64,7 +65,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: localAngularApp,
         policy  =>
         {
-            policy.WithOrigins(jwtSettings.Audience)
+            policy.WithOrigins(corsSettings.AllowedOrigin)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

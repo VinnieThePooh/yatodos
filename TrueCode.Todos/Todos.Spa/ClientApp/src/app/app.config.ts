@@ -7,6 +7,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { JwtInterceptor } from './services/jwt-interceptor.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { JWT_OPTIONS, JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,7 +18,9 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([JwtInterceptor]) 
     ),
-    provideNativeDateAdapter()
+    provideNativeDateAdapter(),
+    JwtHelperService,
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS }
   ]
 };
 

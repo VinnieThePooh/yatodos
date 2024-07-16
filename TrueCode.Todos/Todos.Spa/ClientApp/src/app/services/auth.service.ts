@@ -4,14 +4,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 import { ApiUrls } from '../app.config';
 import { UserProfileService } from './user-profile.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { IUserProfile } from '../models/user-models';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root',    
 })
 export class AuthService {
-  isLoggedIn: boolean = false;
-
   constructor(
+    private jwtHelper: JwtHelperService,
     private profileService: UserProfileService,
     private http: HttpClient
   ) {}
@@ -23,12 +24,10 @@ export class AuthService {
         map((response) => {
           localStorage.setItem('JWT_Token', response.token);
           this.profileService.setUserProfile(response.profile);
-          this.isLoggedIn = true;
           return true;
         }),
         catchError((error) => {
           console.log(error);
-          this.isLoggedIn = false;
           return of(false);
         })
       );
@@ -36,10 +35,21 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('JWT_Token');
-    this.isLoggedIn = false;
+    this.profileService.clearUserProfile();
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn;
+    const token = localStorage.getItem('JWT_Token');
+    const isValid = !this.jwtHelper.isTokenExpired(token);
+    if (isValid)
+      {
+        if (!this.profileService.UserProfile)
+          {
+            var profile = localStorage.getItem('userProfile');
+            if (profile)
+              this.profileService.setUserProfile(JSON.parse(profile) as IUserProfile)
+          }        
+      }
+    return isValid;
   }
 }

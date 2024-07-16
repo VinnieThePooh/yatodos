@@ -31,6 +31,7 @@ builder.Services.AddSingleton<IValidator<CreateTodoRequest>, CreateRequestValida
 builder.Services.AddSingleton<IValidator<UpdateTodoRequest>, UpdateRequestValidator>();
 builder.Services.AddSingleton<IValidator<UpdatePriorityRequest>, UpdatePriorityValidator>();
 builder.Services.AddSingleton<ITodoService, TodoService>();
+builder.Services.AddSingleton<CacheService>();
 builder.Services.AddDbContextFactory<TodosContext>(options => options.UseNpgsql(conString));
 builder.Services.AddExceptionHandler<ExceptionsHandler>();
 
@@ -114,6 +115,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     var context = scope.ServiceProvider.GetRequiredService<TodosContext>();
     await context.Database.MigrateAsync();
     await SampleData.SeedUsersAndRoles(scope.ServiceProvider);
+    var cache = scope.ServiceProvider.GetRequiredService<CacheService>();
+    await cache.InitCache(context);
 }
 
 app.UseSwagger();

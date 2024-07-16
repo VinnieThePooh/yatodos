@@ -16,15 +16,13 @@ namespace TrueCode.Todos.Controllers;
 [Route("api/[controller]")]
 public class TodosController : Controller
 {
-    private readonly UserManager<AppUser> _userManager;
     private readonly ITodoService _todoService;
     private readonly ILogger<TodosController> _logger;
     private int CurrentUserId => User.GetUserId<int>();
     
-    public TodosController(ITodoService todoService, UserManager<AppUser> userManager, ILogger<TodosController> logger)
+    public TodosController(ITodoService todoService, ILogger<TodosController> logger)
     {
         _todoService = todoService ?? throw new ArgumentNullException(nameof(todoService));
-        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     

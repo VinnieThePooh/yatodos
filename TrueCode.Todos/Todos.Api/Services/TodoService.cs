@@ -13,10 +13,12 @@ public class TodoService : ITodoService, ITodoFilterProvider
     private readonly IDbContextFactory<TodosContext> _contextFactory;
     private const int DEFAULT_PAGE_SIZE = 10;
     private readonly ITodoFilterProvider _filterProvider;
+    private readonly CacheService _cacheService;
 
-    public TodoService(IDbContextFactory<TodosContext> contextFactory)
+    public TodoService(IDbContextFactory<TodosContext> contextFactory, CacheService cacheService)
     {
         _contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
+        _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
         _filterProvider = this;
     }
 
@@ -59,7 +61,7 @@ public class TodoService : ITodoService, ITodoFilterProvider
             DueDate = request.DueDate,
             Description = request.Description,
             Title = request.Title,
-            PriorityId =  await FindPriorityIdAsync((PriorityLevel)request.Priority, context),
+            PriorityId =  _cacheService.PriorityCache[request.Priority],
             Completed = request.IsCompleted ?? false
         };
         
@@ -71,9 +73,7 @@ public class TodoService : ITodoService, ITodoFilterProvider
     public async Task UpdateTodo(UpdateTodoRequest request)
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
-        
-        //todo: get from memory
-        var priorityId = await FindPriorityIdAsync((PriorityLevel)request.Priority, context);
+        var priorityId = _cacheService.PriorityCache[request.Priority];
         
         await context.Set<TodoItem>().Where(x => x.Id == request.Id && x.UserId == request.UserId)
             .ExecuteUpdateAsync((setters) => setters
@@ -89,8 +89,7 @@ public class TodoService : ITodoService, ITodoFilterProvider
     {
         await using var context = await _contextFactory.CreateDbContextAsync();
         
-        //todo: get from memory
-        var priorityId = await FindPriorityIdAsync((PriorityLevel)request.Priority, context);
+        var priorityId = _cacheService.PriorityCache[request.Priority];
         await context.Set<TodoItem>().Where(x => x.Id == request.TodoId && x.UserId == request.UserId)
             .ExecuteUpdateAsync((setters) => setters.SetProperty(x => x.PriorityId, priorityId));
     }
@@ -127,26 +126,11 @@ public class TodoService : ITodoService, ITodoFilterProvider
         var quotient = Math.DivRem(totalCount, pageSize, out var remainder);
         return remainder == 0 ? quotient : quotient + 1;
     }
-    
-    //todo: should be cached
-    async Task<int> FindPriorityIdAsync(PriorityLevel priorityValue, TodosContext context)
-    {
-        var priority = await context.Set<TodoPriority>().FirstAsync(x => x.Value == priorityValue);
-        return priority.Id;
-    }
-    
-    //todo: should be cached
-    int FindPriorityId(PriorityLevel priorityValue, TodosContext context)
-    {
-        var priority = context.Set<TodoPriority>().First(x => x.Value == priorityValue);
-        return priority.Id;
-    }
 
     Expression<Func<TodoItem, bool>> ITodoFilterProvider.CreateFilterExpression(TodoFilter filter)
     {
-        //todo: create memory map for that
         using var context = _contextFactory.CreateDbContext();
-        int? priorityId = filter.Priority.HasValue ? FindPriorityId((PriorityLevel)filter.Priority, context) : null;
+        int? priorityId = filter.Priority.HasValue ? _cacheService.PriorityCache[filter.Priority.Value] : null;
 
         return todo =>
             (filter.IsCompleted != null && todo.Completed == filter.IsCompleted || filter.IsCompleted == null) &&

@@ -30,6 +30,7 @@ var corsSettings = builder.Configuration.GetSection(CorsSettings.SectionKey).Get
 builder.Services.AddSingleton<IValidator<CreateTodoRequest>, CreateRequestValidator>();
 builder.Services.AddSingleton<IValidator<UpdateTodoRequest>, UpdateRequestValidator>();
 builder.Services.AddSingleton<IValidator<UpdatePriorityRequest>, UpdatePriorityValidator>();
+builder.Services.AddSingleton<IValidator<CustomRegisterRequest>, RegistrationValidator>();
 builder.Services.AddSingleton<ITodoService, TodoService>();
 builder.Services.AddSingleton<CacheService>();
 builder.Services.AddDbContextFactory<TodosContext>(options => options.UseNpgsql(conString));

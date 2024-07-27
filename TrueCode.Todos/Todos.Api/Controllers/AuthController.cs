@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
@@ -29,10 +30,51 @@ public class AuthController : ControllerBase
         _signInManager = signInManager;
         _jwtSettings = jwtSettings;
     }
+    
+    //todo: returns 204 in swagger-ui instead of 201
+    /// <summary>
+    /// Simple one-step registration
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="validator"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] CustomRegisterRequest request, [FromServices] IValidator<CustomRegisterRequest> validator)
+    {
+        var result = await validator.ValidateAsync(request);
+        if (!result.IsValid)
+            return BadRequest(result.ToDictionary());
+        
+        var user = new AppUser
+        {
+            Email = request.Email,
+            NormalizedEmail =  _userManager.KeyNormalizer.NormalizeEmail(request.Email),
+            UserName = request.Email,
+            NormalizedUserName = _userManager.KeyNormalizer.NormalizeName(request.Email),
+            PhoneNumber = "+111111111111",
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString("D"),
+        };
+        
+        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.Password);
+        var creationResult = await _userManager.CreateAsync(user);
+        if (!creationResult.Succeeded)
+            return BadRequest($"Failed creation of the new user:\n{creationResult.Errors}");
+
+        var roles = new[] { "User" };
+        
+        var roleAddResult = await _userManager.AddToRolesAsync(user, roles);
+        if (!roleAddResult.Succeeded)
+            return BadRequest($"Failed roles assigning to the new user:\n{roleAddResult.Errors}");
+        
+        return Created();
+    }
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginRequest userLogin)
+    public async Task<IActionResult> Login([FromBody] LoginRequest userLogin)
     { 
         var user = await _userManager.FindByEmailAsync(userLogin.Email);
         if (user is null)

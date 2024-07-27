@@ -31,7 +31,7 @@ services:
        context: ./
        dockerfile: Todos.Spa/Dockerfile
       ports:
-        - "8080:80"
+        - "8080:4200"
       depends_on:
         - todos.api
 
